@@ -2,6 +2,34 @@
 
 PulseGraph is a freshness-aware AI analyst that turns live web data into a time-aware knowledge graph for reliable AI reasoning.
 
+## Bright Data APIs
+
+PulseGraph relies on [Bright Data](https://brightdata.com/) to collect real-time web data for populating the knowledge graph. You'll need to set up the following Bright Data APIs:
+
+### Required APIs
+
+1. **SERP API** - Search Engine Results Page API
+   - Used to collect search results and trending topics
+   - Provides fresh data about companies, events, and market sentiment
+   - [Documentation](https://docs.brightdata.com/serp-api)
+
+2. **Web Unlocker API** - Advanced web scraping with automatic unblocking
+   - Bypasses anti-bot protection to access web content
+   - Enables reliable data extraction from news sites and financial platforms
+   - [Documentation](https://docs.brightdata.com/web-unlocker)
+
+### Configuration
+
+Add your Bright Data API credentials to the `.env` file:
+
+```env
+BRIGHTDATA_API_KEY=your_api_key_here
+BRIGHTDATA_SERP_ENDPOINT=your_serp_endpoint
+BRIGHTDATA_UNLOCKER_ENDPOINT=your_unlocker_endpoint
+```
+
+Visit [Bright Data](https://brightdata.com/) to sign up and obtain your API credentials.
+
 ## Prerequisites
 
 - Python 3.9 or higher

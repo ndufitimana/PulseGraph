@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 from neo4j import Driver
 
+from models.registry import validate_signal_type
+
 
 def find_company_by_name(driver: Driver, name: str) -> Optional[Dict[str, Any]]:
     cypher = """
@@ -70,24 +72,50 @@ def get_signal(driver: Driver, company_id: str, period: str, window: str, signal
         return rec["signal"] if rec else None
 
 
-def get_sentiment_delta(
+def get_signal_delta(
     driver: Driver,
     company_id: str,
     period_a: str,
     period_b: str,
     window: str = "post_earnings_7d",
+    signal_type: str = "sentiment",
 ) -> Dict[str, Any]:
     """
-    Compare sentiment score for two periods.
+    Compare signal scores for two periods.
+
+    Args:
+        driver: Neo4j driver
+        company_id: Company ID
+        period_a: First period
+        period_b: Second period
+        window: Signal window (default: "post_earnings_7d")
+        signal_type: Type of signal to compare (default: "sentiment")
+
+    Returns:
+        Dictionary with signal comparison data
     """
-    a = get_signal(driver, company_id, period_a, window, "sentiment")
-    b = get_signal(driver, company_id, period_b, window, "sentiment")
+    # Validate signal type
+    if not validate_signal_type(signal_type):
+        return {
+            "period_a": period_a,
+            "period_b": period_b,
+            "window": window,
+            "signal_type": signal_type,
+            "delta": None,
+            "a": None,
+            "b": None,
+            "note": f"Invalid signal type: {signal_type}",
+        }
+
+    a = get_signal(driver, company_id, period_a, window, signal_type)
+    b = get_signal(driver, company_id, period_b, window, signal_type)
 
     if not a or not b:
         return {
             "period_a": period_a,
             "period_b": period_b,
             "window": window,
+            "signal_type": signal_type,
             "delta": None,
             "a": a,
             "b": b,
@@ -98,10 +126,29 @@ def get_sentiment_delta(
         "period_a": period_a,
         "period_b": period_b,
         "window": window,
+        "signal_type": signal_type,
         "delta": float(a["score"]) - float(b["score"]),
         "a": a,
         "b": b,
     }
+
+
+def get_sentiment_delta(
+    driver: Driver,
+    company_id: str,
+    period_a: str,
+    period_b: str,
+    window: str = "post_earnings_7d",
+) -> Dict[str, Any]:
+    """
+    Compare sentiment score for two periods.
+
+    DEPRECATED: Use get_signal_delta with signal_type="sentiment" instead.
+    Kept for backwards compatibility.
+    """
+    return get_signal_delta(
+        driver, company_id, period_a, period_b, window, signal_type="sentiment"
+    )
 
 def get_latest_fetch_by_type(driver: Driver, company_id: str, period: str) -> List[Dict[str, Any]]:
     cypher = """

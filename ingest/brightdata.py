@@ -115,7 +115,6 @@ def unlock_to_markdown(url: str, *, country: str = "us") -> str:
     resp = requests.post(BRIGHTDATA_REQUEST_URL, headers=_headers(), json=payload, timeout=120)
     resp.raise_for_status()
     data = resp.json()
-    breakpoint()
     # Different responses may embed content under different keys; handle common ones.
     for key in ("data", "content", "markdown", "result", "body"):
         val = data.get(key)
