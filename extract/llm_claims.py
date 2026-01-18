@@ -15,7 +15,7 @@ def extract_claims_from_source_openai(
     model: str = "gpt-4o-mini",
     max_chars: int = 12000,
 ) -> List[Claim]:
-    # Keep it simple: trim content so calls stay fast/cheap
+    # Trim content so calls stay fast and cheap
     text = source.raw_text[:max_chars]
 
     prompt = f"""

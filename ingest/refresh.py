@@ -22,17 +22,6 @@ from graph.upsert import upsert_claim_and_links
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-
-def _earnings_query(company_name: str, period: str) -> str:
-    """
-    DEPRECATED: Legacy hardcoded query generation.
-    Use generate_search_query from ingest.llm_query_gen instead.
-
-    Kept for backwards compatibility only.
-    """
-    # Simple, effective first pass. You can tune later.
-    return f'{company_name} {period} earnings recap guidance revenue EPS reaction'
-
 def refresh_company_period(
     driver: Driver,
     company_id: str,
@@ -88,6 +77,8 @@ def refresh_company_period(
     for r in serp_results:
         try:
             md = unlock_to_markdown(r.url, country="us")
+            if not md:
+                continue
             doc = SourceDoc(
                 url=r.url,
                 title=r.title or r.url,
