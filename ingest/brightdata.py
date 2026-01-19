@@ -124,5 +124,7 @@ def unlock_to_markdown(url: str, *, country: str = "us") -> str:
     # Last resort: if API returns the raw content at top-level
     if isinstance(data, str):
         return data
+    
+    return None
 
-    raise RuntimeError(f"Unlocker response missing markdown content for {url}. Keys: {list(data.keys())}")
+    # raise RuntimeError(f"Unlocker response missing markdown content for {url}. Keys: {list(data.keys())}")
